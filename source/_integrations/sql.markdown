@@ -185,6 +185,22 @@ WHERE
 ```
 Use `state` as column for value.
 
+
+### State of an entity from specified time before
+
+To retrieve states of an entity from 1 day before, the query is:
+```sql
+SELECT state 
+FROM states 
+INNER JOIN states_meta ON states.metadata_id = states_meta.metadata_id
+WHERE states_meta.entity_id = 'sensor.temperature_in' 
+  AND last_updated_ts <= strftime('%s', 'now', '-1 day')
+ORDER BY last_updated_ts DESC LIMIT 1;
+```
+To change the time offset, `-1 day` can be replaced with `- 8 hours` etc.
+
+Keep in mind that, depending on the update frequency of your sensor and other factors, this may not be a 100% accurate reflection of the actual situation you are measuring. Since your database won’t necessarily have a value saved exactly 24 hours ago, it’s usually a good idea to use “>=” or “<=” to get one of the closest values.
+
 ### Database size
 
 #### Postgres
